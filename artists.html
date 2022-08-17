@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="site.css" type="text/css" />
+</head>
+<body>
+    <h1>Music Library Browser</h1>
+    <h2 class="artist_header">Artists:</h2>
+    <ul id="artist-list">
+        <li><a>text</a></li>
+    </ul>
+    <script>
+        window.addEventListener("DOMContentLoaded", function(e)
+        {
+            const queryString = window.location.search;
+            console.log(queryString);
+            const urlParams = new URLSearchParams(queryString);
+            const gid = urlParams.get('genre_id');
+            console.log(gid);
+            var artistlist = document.getElementById("artist-list");
+            var artistitem = artistlist.firstElementChild;
+            artistlist.removeChild(artistitem);
+            fetch('https://musiclibraryapi.jtloyd.net/api/artists?genreid=' + gid)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                data.forEach(element => {
+                    var li = artistitem.cloneNode(true);
+                    var a = li.firstElementChild;
+                    a.href = 'works.html?artist_id=' + element.artistId;
+                    a.innerHTML = element.artistName;
+                    artistlist.appendChild(li);
+                });
+            });  
+        });
+    </script>
+</body>
+</html>

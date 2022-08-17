@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="site.css" type="text/css" />
+</head>
+<body>
+    <h1>Music Library Browser</h1>
+    <h2 class="version_header">Work Versions:</h2>
+    <ul id="version-list">
+        <li>
+            <div class="columns">
+                <div>
+                    <img src="person.png" width="70" height="70">
+                </div>
+                <div class="desc">text1</div>
+                <div class="lossless">text2</div>
+            </div>
+        </li>
+    </ul>
+    <script>
+        window.addEventListener("DOMContentLoaded", function(e)
+        {
+            const queryString = window.location.search;
+            console.log(queryString);
+            const urlParams = new URLSearchParams(queryString);
+            const wid = urlParams.get('work_id');
+            console.log(wid);
+            var workversionslist = document.getElementById("version-list");
+            var workversionsitem = workversionslist.firstElementChild;
+            workversionslist.removeChild(workversionsitem);
+            fetch('https://musiclibraryapi.jtloyd.net/api/workversions?workid=' + wid)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                data.forEach(element => {
+                    var li = workversionsitem.cloneNode(true);
+                    var dcols = li.firstElementChild;
+                    var dc0 = dcols.getElementsByTagName("div")[0];
+                    var dc1 = dcols.getElementsByTagName("div")[1];
+                    var dc2 = dcols.getElementsByTagName("div")[2];
+                    dc1.innerHTML = element.workVersionName;
+                    if (element.lossless) {
+                        dc2.innerHTML = "lossless";
+                    } else {
+                        dc2.innerHTML = "lossy";
+                    }
+                    if (element.imageId > 0) {
+                        dc0.firstElementChild.src = "https://musiclibraryapi.jtloyd.net/api/images/" + element.imageId;
+                    }
+                    workversionslist.appendChild(li);
+                });
+            });  
+        });
+    </script>
+</body>
+</html>

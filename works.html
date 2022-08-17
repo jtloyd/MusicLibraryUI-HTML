@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Library Browser</title>
+    <link rel="stylesheet" href="site.css" type="text/css" />
+</head>
+<body>
+    <img class="artistimage" src="person.png" height="250">
+    <h2 class="work_header">Works:</h2>
+    <ul id="work-list">
+        <li>
+            <div class="columns">
+                <div>
+                    <img src="person.png" width="70" height="70">
+                </div>
+                <div class="desc">
+                    <a>text1</a>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <script>
+        window.addEventListener("DOMContentLoaded", function(e)
+        {
+            const queryString = window.location.search;
+            console.log(queryString);
+            const urlParams = new URLSearchParams(queryString);
+            const aid = urlParams.get('artist_id');
+            console.log(aid);
+            fetch('https://musiclibraryapi.jtloyd.net/api/artists/' + aid)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                console.log(data.artistName);
+                console.log(data.imageId);
+                var artistelement = document.getElementsByClassName("work_header")[0];
+                artistelement.innerHTML = data.artistName + " " + artistelement.innerHTML;
+                var artistimageelement = document.getElementsByClassName("artistimage")[0];
+                if (data.imageId > 0) {
+                    artistimageelement.src = "https://musiclibraryapi.jtloyd.net/api/images/" + data.imageId;
+                }
+                artistimageelement.alt = data.artistName;
+            });
+            var workslist = document.getElementById("work-list");
+            var worksitem = workslist.firstElementChild;
+            workslist.removeChild(worksitem);
+            fetch('https://musiclibraryapi.jtloyd.net/api/works?artistid=' + aid)
+              .then(response => response.json())
+              .then(data => {
+                console.log(data);
+                data.forEach(element => {
+                    var li = worksitem.cloneNode(true);
+                    var dcols = li.firstElementChild;
+                    var dc0 = dcols.getElementsByTagName("div")[0];
+                    var dc1 = dcols.getElementsByTagName("div")[1];
+                    if (element.imageId > 0) {
+                        dc0.firstElementChild.src = "https://musiclibraryapi.jtloyd.net/api/images/" + element.imageId;
+                    }
+                    var a = dc1.firstElementChild;
+                    a.href = 'workversions.html?work_id=' + element.workId;
+                    a.innerHTML = element.workName;
+                    workslist.appendChild(li);
+                });
+            });  
+        });
+    </script>
+</body>
+</html>
